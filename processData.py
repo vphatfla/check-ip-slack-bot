@@ -1,4 +1,5 @@
 import json
+from xml.dom.minidom import TypeInfo
 from json2html import *
 import webbrowser
 import os
@@ -23,22 +24,33 @@ def processData(jsonData, ipAddress):
     # create url link to open local html file, note: not the optimal way to do it
     urlLink = 'file://' + os.getcwd() + "/tempHTML/temp.html"
     
-    #dict for summary data
-    summaryDataDict = {
-        "IP address" : ipAddress,
-        "Owner": ("N/A") if ("as_owner" not in attributeData) else attributeData["as_owner"],
-        
-        "Country" : ("N/A") if ("country" not in attributeData) else attributeData["country"],
-        "Continent": ("N/A") if ("continent" not in attributeData) else attributeData["continent"],
-        "Links for full data (copy and paste on the browser)": urlLink,
-    }
+    
+    def getSummaryDataToSay(): 
+        summaryDataDict = {
+            "IP address" : ipAddress,
+            "Owner": ("N/A") if ("as_owner" not in attributeData) else attributeData["as_owner"],
+            
+            "Country" : ("N/A") if ("country" not in attributeData) else attributeData["country"],
+            "Continent": ("N/A") if ("continent" not in attributeData) else attributeData["continent"],
+            "Links for full data (copy and paste on the browser), for host only": urlLink,
+        }
 
-    #conver dict to string STRI summary
-    stri = "Summary data \n"
-    for key in summaryDataDict.keys():
-        stri += str(key) + ": " + str(summaryDataDict[key]) + "\n"
+        #conver dict to string STRI summary
+        stri = "Summary data \n"
+        for key in summaryDataDict.keys():
+            stri += str(key) + ": " + str(summaryDataDict[key]) + "\n"
+
+        return stri
+
+    def getFullDataToSay():
+        stri = "Full data \n"
         
-    return stri, " 1"
+        for key in allData.keys():
+            stri += str(key) + ": " + str(allData[key]) + "\n"
+        
+        return stri
+
+    return getSummaryDataToSay, getFullDataToSay
 
 export = processData
 
